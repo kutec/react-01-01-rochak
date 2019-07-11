@@ -10,9 +10,9 @@ export class Login extends Component {
   authService = AuthService;
   isLoggedIn = false;
   authenticationService = new AuthenticationService();
-  state = {
-    toDashboard: false
-  }
+  // state = {
+  //   toDashboard: false
+  // }
   constructor(props) {
     super(props);
     this.state = {
@@ -30,7 +30,7 @@ export class Login extends Component {
     }
   }
 
-  login = () => {
+  login = (e) => {
     let userInfo = this.getUserInfo();
     this.authenticationService.login(userInfo).subscribe((response) => {
       if (response.loggedIn) {
@@ -53,11 +53,14 @@ export class Login extends Component {
 
   submitForm = (e) => {
     e.preventDefault();
+    console.log('submitForm out', this.validateForm());
     if (this.validateForm()) {
+      console.log('submitForm in');
       let fields = {};
-      fields["emailid"] = "";
-      fields["password"] = "";
+      fields["defaultLoginFormEmail"] = "";
+      fields["defaultLoginFormPassword"] = "";
       this.setState({ fields: fields });
+      this.login(e);
       alert("Form submitted");
     }
   }
@@ -67,29 +70,29 @@ export class Login extends Component {
     let errors = {};
     let formIsValid = true;
 
-    if (!fields["emailid"]) {
+    if (!fields["defaultLoginFormEmail"]) {
       formIsValid = false;
-      errors["emailid"] = "*Please enter your email-ID.";
+      errors["defaultLoginFormEmail"] = "*Please enter your email-ID.";
     }
 
-    if (typeof fields["emailid"] !== "undefined") {
+    if (typeof fields["defaultLoginFormEmail"] !== "undefined") {
       //regular expression for email validation
       var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-      if (!pattern.test(fields["emailid"])) {
+      if (!pattern.test(fields["defaultLoginFormEmail"])) {
         formIsValid = false;
-        errors["emailid"] = "*Please enter valid email-ID.";
+        errors["defaultLoginFormEmail"] = "*Please enter valid email-ID.";
       }
     }
 
-    if (!fields["password"]) {
+    if (!fields["defaultLoginFormPassword"]) {
       formIsValid = false;
-      errors["password"] = "*Please enter your password.";
+      errors["defaultLoginFormPassword"] = "*Please enter your password.";
     }
 
-    if (typeof fields["password"] !== "undefined") {
-      if (!fields["password"].match(/^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%&]).*$/)) {
+    if (typeof fields["defaultLoginFormPassword"] !== "undefined") {
+      if (!fields["defaultLoginFormPassword"].match(/^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%&]).*$/)) {
         formIsValid = false;
-        errors["password"] = "*Please enter secure and strong password.";
+        errors["defaultLoginFormPassword"] = "*Please enter secure and strong password.";
       }
     }
 
@@ -111,10 +114,11 @@ export class Login extends Component {
 
             <p className="h4 mb-4">Sign in</p>
 
-            <input type="email" id="defaultLoginFormEmail" className="form-control mb-4" placeholder="E-mail" value={this.state.fields.emailid} onChange={this.handleChange}   />
-            <div className="errorMsg">{this.state.errors.emailid}</div>
-            
-            <input type="password" id="defaultLoginFormPassword" className="form-control mb-4" placeholder="Password" />
+            <input type="text" id="defaultLoginFormEmail" className="form-control mb-4" placeholder="E-mail" value={this.state.fields.defaultLoginFormEmail} onChange={this.handleChange} name="defaultLoginFormEmail" />
+            <div className={this.state.errors.defaultLoginFormEmail ? 'errorMsg' : 'mb-4'} >{this.state.errors.defaultLoginFormEmail}</div>
+
+            <input type="password" id="defaultLoginFormPassword" className="form-control mb-4" placeholder="Password" value={this.state.fields.defaultLoginFormPassword} onChange={this.handleChange} name="defaultLoginFormPassword" />
+            {this.state.errors.defaultLoginFormPassword && <div className="errorMsg">{this.state.errors.defaultLoginFormPassword}</div>}
 
             <div className="d-flex justify-content-around">
               <div>
